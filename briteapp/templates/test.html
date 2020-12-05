@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue"></script>
+</head>
+<body>
+    <div id="starter">
+            <select class="form-control" required>
+                    <option v-for="cat in cats">
+                        {{cat.name}}
+                    </option>
+            </select>
+    </div>
+    <div id="app">
+            <select v-model="selected">
+              <option selected value="900">Please Select</option>
+              <option v-for="option in options" :value="option.value">
+                {{ option.text }}
+              </option>
+            </select>
+            <p>Selected: {{ selected }}</p>
+          </div>
+    
+    <script type="text/javascript">
+        // new Vue({
+        //     el: '#app',
+        //     data: {
+        //         cats: [
+        //             {
+        //                 id: 1,
+        //                 name: 'Johnny',
+        //                 description: 'Really lousy'
+        //             },
+        //             {
+        //                 id: 2,
+        //                 name: 'Perry',
+        //                 description: 'Playful'
+        //             },
+        //             {
+        //                 id: 3,
+        //                 name: 'Samantha',
+        //                 description: 'Lazy'
+        //             }
+        //         ],
+        //     }
+        // })
+        new Vue({
+  el: '#app',
+  data: {
+    selected: 900,
+    options: [{
+      value: 12,
+      text: 12
+    }, {
+      value: 24,
+      text: 24
+    }, {
+      value: 36,
+      text: 36
+    }]
+  }
+})
+    </script>
+</body>
+</html>

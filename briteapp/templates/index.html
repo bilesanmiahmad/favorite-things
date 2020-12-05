@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>BriteApp -- Favorites</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <div id="starting">
+        <div class="container">
+            <div class="row">
+                
+                <h1>List of Categories
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addCategoryModal"> ADD CATEGORY</button>
+                </h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="category in categories">
+                            <th scope="row">${category.id}</th>
+                            <td>${category.name}</td>
+                            <td>${category.description}</td>
+                            <td>
+                                <button class="btn btn-info" v-on:click="getCategory(category.id)">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Add Category Modal -->
+                <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">ADD CATEGORY</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form v-on:submit.prevent="addCategory()">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="category_name">Category Name</label>
+                                        <input type="text" name="" class="form-control" placeholder="Enter Name" id="category_name" v-model="newCategory.name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="category_description">Category Name</label>
+                                        <textarea class="form-control" id="category_description" placeholder="Enter Description" rows="3" v-model="newCategory.description" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                </div>
+                <!-- End of Add Category Modal -->
+                <!-- Edit Category Modal -->
+                <div class="modal fade" id="editCategoryModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">EDIT CATEGORY</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <form v-on:submit.prevent="updateCategory()">
+                                    <div class="modal-body">
+                                        <div class="form-group">
+                                            <label for="category_name">Category Name</label>
+                                            <input type="text" v-model="currentCategory.name" placeholder="Enter Name" class="form-control" id="category_name" v-model="newCategory.name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="category_description">Category Name</label>
+                                            <textarea class="form-control" id="category_description" v-model="currentCategory.description" placeholder="Enter Description" rows="3" v-model="newCategory.description" required></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                    </div>
+                    <!-- End of Edit Category Modal -->
+            </div>
+            <div class="row">
+                <h1>List of Favorites
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addFavoriteModal"> ADD FAVORITE</button>
+                </h1>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Meta</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Created</th>
+                            <th scope="col">Modified</th>
+                            <th scope="col">Audit</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="favorite in favorites">
+                            <th scope="row">${favorite.id}</th>
+                            <td>${favorite.title}</td>
+                            <td>${favorite.description}</td>
+                            <td>${favorite.rank}</td>
+                            <td>${favorite.meta}</td>
+                            <td>${favorite.category.name}</td>
+                            <td>${favorite.created}</td>
+                            <td>${favorite.modified}</td>
+                            <td>${favorite.audit}</td>
+                            <td>
+                                <button class="btn btn-info" v-on:click="getFavorite(favorite.id)">Edit</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <!-- Add Favorite Modal -->
+                <div class="modal fade" id="addFavoriteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">ADD FAVORITE</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <form v-on:submit.prevent="addFavorite()">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="favorite_title">Title</label>
+                                        <input type="text" name="" class="form-control" placeholder="Enter Title" id="favorite_title" v-model="newFavorite.title" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="favorite_description">Description</label>
+                                        <textarea class="form-control" id="favorite_description" placeholder="Enter Description" rows="3" v-model="newFavorite.description" required></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="favorite_rank">Rank</label>
+                                        <input type="number" class="form-control" id="favorite_rank" placeholder="Enter Rank" rows="3" v-model="newFavorite.rank" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="favorite_meta">Meta</label>
+                                        <input type="text" class="form-control" id="favorite_meta" placeholder="Enter Meta" rows="3" v-model="newFavorite.meta" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="favorite_category">Category</label>
+                                        <select class="form-control" id="favorite_category"  v-model="newFavorite.category" required>
+                                            <option v-for="cat in categories" v-bind:value="cat.id" >
+                                                ${cat.name}
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                </div>
+                <!-- End of Add Favorite Modal -->
+                <!-- Edit Favorite Modal -->
+                <div class="modal fade" id="editFavModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">EDIT FAVORITE</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                            </div>
+                            <form v-on:submit.prevent="updateFavorite()">
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label for="category_name">Favorite Title</label>
+                                        <input type="text" v-model="currentFavorite.title" placeholder="Enter Name" class="form-control" id="category_name" v-model="newCategory.name" required>
+                                    </div>
+                                    <div class="form-group">
+                                            <label for="favorite_description">Description</label>
+                                            <textarea class="form-control" v-model="currentFavorite.description" id="favorite_description" placeholder="Enter Description" rows="3" v-model="newFavorite.description" required></textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="favorite_rank">Rank</label>
+                                            <input type="number" class="form-control" v-model="currentFavorite.rank" id="favorite_rank" placeholder="Enter Rank" rows="3" v-model="newFavorite.rank" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="favorite_meta">Meta</label>
+                                            <input type="text" class="form-control" v-model="currentFavorite.meta" id="favorite_meta" placeholder="Enter Meta" rows="3" v-model="newFavorite.meta" required>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="favorite_category">Category</label>
+                                            <select class="form-control" id="favorite_category"  v-model="newFavorite.category" required>
+                                                <option v-for="cat in categories" v-bind:value="cat.id" >
+                                                    ${cat.name}
+                                                </option>
+                                            </select>
+                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="loading" v-if="loading===true">Loading&#8230;</div>
+                </div>
+                        <!-- End of Edit Favorite Modal -->
+            </div>
+        </div>
+        <div class="loading" v-if="loading===true">Loading&#8230;</div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>
+    <script type="text/javascript">
+        Vue.http.headers.common['X-CSRFToken'] = "{{ csrf_token }}";
+        new Vue({
+            el: '#starting',
+            delimiters: ['${','}'],
+            data: {
+                type: 'me',
+                favorites: [],
+                categories: [],
+                dogs: [
+                    'Benji', 'Snoopy', 'Brad'
+                ],
+                cats: [
+                    {
+                        id: 1,
+                        name: 'Johnny',
+                        description: 'Really lousy'
+                    },
+                    {
+                        id: 2,
+                        name: 'Perry',
+                        description: 'Playful'
+                    },
+                    {
+                        id: 3,
+                        name: 'Samantha',
+                        description: 'Lazy'
+                    }
+                ],
+                loading: false,
+                currentFavorite: {},
+                currentCategory: {},
+                message: null,
+                newFavorite: {
+                    'title': null,
+                    'description': null,
+                    'rank': null,
+                    'meta': null,
+                    'category': null,
+                    'created': null,
+                    'modified': null,
+                    'audit': null,
+                },
+                newCategory: {
+                    'name': null,
+                    'description': null,
+                    'created': null,
+                    'modified': null
+                }
+            },
+            mounted: function(){
+                this.getCategories();
+                this.getFavorites();
+            },
+            methods: {
+                getCategories: function(){
+                    this.loading= true;
+                    this.$http.get('/api/v1/categories/')
+                        .then((response) => {
+                            this.categories = response.data;
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading =false;
+                            console.log(err);
+                        })
+                },
+                getCategory: function(id){
+                    this.loading = true;
+                    this.$http.get(`/api/v1/categories/${id}/`)
+                        .then((response) => {
+                            this.currentCategory = response.data;
+                            $("#editCategoryModal").modal('show');
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                },
+                addCategory: function(){
+                    this.loading = true;
+                    this.$http.post('/api/v1/categories/', this.newCategory)
+                        .then((response) => {
+                            this.loading = false;
+                            this.getCategories();
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                },
+                updateCategory: function(){
+                    this.loading = true;
+                    this.$http.put(`/api/v1/categories/${this.currentCategory.id}/`, this.currentCategory)
+                        .then((response) => {
+                            this.loading = false;
+                            this.currentCategory = response.data;
+                            this.getCategories();
+                            $("#editCategoryModal").modal('hide');
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                },
+                getFavorites: function(){
+                    this.loading= true;
+                    this.$http.get('/api/v1/favorites/get-favourites')
+                        .then((response) => {
+                            this.favorites = response.data['results'];
+                            console.log(response.data)
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading =false;
+                            console.log(err);
+                        })
+                },
+                getFavorite: function(id){
+                    this.loading = true;
+                    this.$http.get(`/api/v1/favorites/${id}/`)
+                        .then((response) => {
+                            this.currentFavorite = response.data;
+                            $("#editFavModal").modal('show');
+                            this.loading = false;
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                },
+                addFavorite: function(){
+                    this.loading = true;
+                    this.$http.post('/api/v1/favorites/', this.newFavorite)
+                        .then((response) => {
+                            this.loading = false;
+                            this.getFavorites();
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                },
+                updateFavorite: function(){
+                    this.loading = true;
+                    this.$http.put(`/api/v1/favorites/${this.currentFavorite.id}/`, this.currentFavorite)
+                        .then((response) => {
+                            this.loading = false;
+                            this.currentFavorite = response.data;
+                            this.getFavorites();
+                        })
+                        .catch((err) => {
+                            this.loading = false;
+                            console.log(err);
+                        })
+                }
+            }            
+        });
+    </script>
+</body>
+</html>

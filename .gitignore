@@ -1,0 +1,7 @@
+.env
+.vscode
+.sonarlint
+briteproject/__pycache__
+briteapp/__pycache__
+migrations/
+britecore
